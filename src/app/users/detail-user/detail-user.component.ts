@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { UsersService } from '../../shared/services/users.service';
 
 @Component({
   selector: 'app-detail-user',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DetailUserComponent implements OnInit {
 
-  constructor() { }
+  routerSubscribe;
+
+  constructor(private route: ActivatedRoute,private _user_service:UsersService) { }
 
   ngOnInit() {
+    this.routerSubscribe = this.route.params.subscribe(params => {
+      let username: string = params['username'];
+
+      this._user_service.getUser(username).subscribe((data)=>{
+        console.log(data);
+      })
+
+    });
   }
 
 }
