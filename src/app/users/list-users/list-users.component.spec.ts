@@ -22,4 +22,11 @@ describe('ListUsersComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should sum', () => {
+    const a = 5;
+    const b = 4;
+    const result = component.sum(a,b);
+    expect(result).toEqual(a+b);
+  });
 });
