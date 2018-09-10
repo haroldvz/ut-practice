@@ -8,17 +8,23 @@ import { DetailUserComponent } from './users/detail-user/detail-user.component';
 import { UsersService } from './shared/services/users.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from './shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HomeComponent } from './components/home/home.component';
 //import { HttpClientModule } from '@angular/common/http'; 
 @NgModule({
   declarations: [
     AppComponent,
     ListUsersComponent,
-    DetailUserComponent
+    DetailUserComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
+    SharedModule,
     RouterModule.forRoot([]),
     //HttpClientModule
   ],

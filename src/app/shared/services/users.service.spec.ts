@@ -1,9 +1,7 @@
 import { TestBed, inject, async, getTestBed } from '@angular/core/testing';
 import { UsersService } from './users.service';
-import { HttpClientModule } from '@angular/common/http'
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
-import { ApiService } from './api.service';
-
+import { of } from 'rxjs';
 
 let mock = {
   "login": "haroldvz",
@@ -39,7 +37,18 @@ let mock = {
   "updated_at": "2018-09-06T15:54:57Z"
 }
 
+const UserServiceMock = {
+  getUsers: () => {
+    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }];
+    return of(todos);
+  },
+  getUser: () => {
+    const todo = [{ login: 'haroldvz' }];
+    return of(todo);
+  }
+};
 
+/*
 describe('UsersService', () => {
   let user_service: UsersService;
   let httpmock: HttpTestingController = null;
@@ -86,20 +95,21 @@ describe('UsersService', () => {
     })));
   });
 });
+*/
 
 
-/*
-describe('UserService', ()=>{
+describe('UserService', () => {
 
   let injector;
-  let service:UsersService;
-  let httpmock:HttpTestingController;
+  let service: UsersService;
+  let httpmock: HttpTestingController;
 
-  beforeEach(()=>{
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule],
-      providers:[UsersService]
+      imports: [HttpClientTestingModule],
+      providers: [{ provide: UsersService, useValue: UserServiceMock }]
     });
+
     injector = getTestBed();
     service = injector.get(UsersService);
     httpmock = injector.get(HttpTestingController);
@@ -108,7 +118,7 @@ describe('UserService', ()=>{
   });
 
 
-  describe('#getUser',()=>{
+  /*describe('#getUser',()=>{
 
     it('should return an Observable',()=>{
       service.getUser('haroldvz').subscribe((data)=>{
@@ -117,9 +127,20 @@ describe('UserService', ()=>{
       });
     });
 
+  });*/
+
+  describe('#getUsers', () => {
+
+    it('should return an Observable with the users data', () => {
+      service.getUsers().subscribe((data) => {
+        console.log(UserServiceMock.getUsers());
+        expect(data).toEqual([{ login: 'haroldvz' }, { login: 'dev4ndy' }]);
+      });
+    });
+
   });
 
 
 
 
-})*/
+})

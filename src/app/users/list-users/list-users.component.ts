@@ -14,12 +14,12 @@ export class ListUsersComponent implements OnInit {
     return a + b;
   }
 
-  data;
+  users;
 
   ngOnInit() {
     this._user_service.getUsers().subscribe((data)=>{
       console.log(data);
-      this.data = data;
+      this.users = data;
     })
   }
 

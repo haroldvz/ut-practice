@@ -9,14 +9,14 @@ import { Observable } from 'rxjs';
 export class UsersService {
 
     
-    endpoint_url:string = 'users/';
+    endpoint_url:string = 'users';
 
     constructor(private _api_service: ApiService) { 
 
     }
 
     getUser(user:string){
-    return this._api_service.get(this.endpoint_url,user).pipe(map(
+    return this._api_service.get(this.endpoint_url+'/',user).pipe(map(
       (data) => {
         console.log(data);
         //return usersDescriptor.import(data);
