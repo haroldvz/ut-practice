@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/internal/operators/map';
 import { ApiService } from './api.service';
 import { usersDescriptor } from '../types/user.type';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +26,7 @@ export class UsersService {
     }
 
 
-    getUsers(){
+    getUsers():Observable<any>{
       return this._api_service.get(this.endpoint_url).pipe(map(
         (data) => {
           console.log(data);

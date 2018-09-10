@@ -1,14 +1,11 @@
-import { TestBed, inject, async } from '@angular/core/testing';
-
+import { TestBed, inject, async, getTestBed } from '@angular/core/testing';
 import { UsersService } from './users.service';
-import { HttpClientModule } from '@angular/common/http';
-import {HttpClientTestingModule} from '@angular/common/http/testing'
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { HttpClientModule } from '@angular/common/http'
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 import { ApiService } from './api.service';
-import { HttpModule } from '@angular/http';
+
 
 let mock = {
-  
   "login": "haroldvz",
   "id": 38877229,
   "node_id": "MDQ6VXNlcjM4ODc3MjI5",
@@ -34,45 +31,95 @@ let mock = {
   "email": null,
   "hireable": null,
   "bio": null,
-  "public_repos": 11,
+  "public_repos": 12,
   "public_gists": 0,
   "followers": 0,
   "following": 0,
   "created_at": "2018-05-01T06:59:17Z",
   "updated_at": "2018-09-06T15:54:57Z"
-  
 }
 
+
 describe('UsersService', () => {
-  //let service = UsersService;
+  let user_service: UsersService;
+  let httpmock: HttpTestingController = null;
+  let api_service_spy: jasmine.SpyObj<ApiService>;
+  let apise: ApiService;
+
+  //if i define here not works with the userservice, the function get called 0 times .. fix !!
+  const spy = jasmine.createSpyObj('ApiService', ['get']);
+
   beforeEach(() => {
+
+
     TestBed.configureTestingModule({
       providers: [UsersService],
-      imports:[HttpClientTestingModule,HttpModule]
+      imports: [HttpClientModule]
     });
 
-    //service = TestBed.get(UsersService);
-    
-    
+    //spyOn(apise,'get');
+
+    user_service = TestBed.get(UsersService);
+    api_service_spy = TestBed.get(ApiService);
+    //httpmock = TestBed.get(HttpTestingController);//only works with HttpClientTestingModule
   });
 
   it('should be created', inject([UsersService], (service: UsersService) => {
     expect(service).toBeTruthy();
   }));
 
-  /*it('should retrieve data from API via GET', async(inject([UsersService], (service: UsersService) => {
-    let r = {}
-    service.getUser('haroldvz').subscribe((data)=>{
-      r = data;
-      console.log("asdasdasd");
-      console.log(data);
-    })
-    console.log("asdasdasd");
-    console.log(r);
+  describe('When consult to haroldvz user', () => {
+    it('should retrieve haroldvz user data from API via GET', async(inject([ApiService], (api_ser: ApiService) => {
 
-    expect(mock).toEqual(mock);
+      //spyOn(api_ser,'get').and.returnValue(Observable.of());
+      let s = new UsersService(api_ser);//also works with this
+      //spyOn(api_ser, 'get'); // 
+      user_service.getUser('haroldvz').subscribe((data) => {
+        console.log("Get user haroldvz")
+        console.log(data);
+        expect(data).toEqual(mock);//compare all json fields with all data fields
+      });
 
-    })));*/
+      expect(spy.get).toBeDefined();
+      expect(spy.get).toHaveBeenCalledTimes(0);
 
-
+    })));
+  });
 });
+
+
+/*
+describe('UserService', ()=>{
+
+  let injector;
+  let service:UsersService;
+  let httpmock:HttpTestingController;
+
+  beforeEach(()=>{
+    TestBed.configureTestingModule({
+      imports:[HttpClientTestingModule],
+      providers:[UsersService]
+    });
+    injector = getTestBed();
+    service = injector.get(UsersService);
+    httpmock = injector.get(HttpTestingController);
+
+
+  });
+
+
+  describe('#getUser',()=>{
+
+    it('should return an Observable',()=>{
+      service.getUser('haroldvz').subscribe((data)=>{
+        console.log(data);
+        expect(data).toEqual(mock);
+      });
+    });
+
+  });
+
+
+
+
+})*/
