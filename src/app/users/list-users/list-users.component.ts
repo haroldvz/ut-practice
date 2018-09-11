@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../shared/services/users.service';
 import { usersDescriptor } from '../../shared/types/user.type';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-list-users',
@@ -13,9 +14,9 @@ export class ListUsersComponent implements OnInit {
 
   constructor(private _user_service:UsersService) { }
 
-  sum(a: number, b: number): number {
+  /*sum(a: number, b: number): number {
     return a + b;
-  }
+  }*/
 
   ngOnInit() {
     this._user_service.getUsers().subscribe((data)=>{
@@ -24,6 +25,12 @@ export class ListUsersComponent implements OnInit {
           this.users.push(usersDescriptor.import(element));
       });
     })
+  }
+
+  searchUsers(){
+
+    //const params = new HttpParams().set('q', users);
+
   }
 
 }

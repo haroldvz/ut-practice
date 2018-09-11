@@ -2,6 +2,9 @@ import { TestBed, inject, async, getTestBed } from '@angular/core/testing';
 import { UsersService } from './users.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 import { of } from 'rxjs';
+import { usersDescriptor } from '../types/user.type';
+
+//TEST HERE WITH HTTP?? OR MOCKS?
 
 let mock = {
   "login": "haroldvz",
@@ -43,59 +46,10 @@ const UserServiceMock = {
     return of(todos);
   },
   getUser: () => {
-    const todo = [{ login: 'haroldvz' }];
-    return of(todo);
+    const todo = { login: 'haroldvz' };
+    return of(usersDescriptor.import(todo));
   }
 };
-
-/*
-describe('UsersService', () => {
-  let user_service: UsersService;
-  let httpmock: HttpTestingController = null;
-  let api_service_spy: jasmine.SpyObj<ApiService>;
-  let apise: ApiService;
-
-  //if i define here not works with the userservice, the function get called 0 times .. fix !!
-  const spy = jasmine.createSpyObj('ApiService', ['get']);
-
-  beforeEach(() => {
-
-
-    TestBed.configureTestingModule({
-      providers: [UsersService],
-      imports: [HttpClientModule]
-    });
-
-    //spyOn(apise,'get');
-
-    user_service = TestBed.get(UsersService);
-    api_service_spy = TestBed.get(ApiService);
-    //httpmock = TestBed.get(HttpTestingController);//only works with HttpClientTestingModule
-  });
-
-  it('should be created', inject([UsersService], (service: UsersService) => {
-    expect(service).toBeTruthy();
-  }));
-
-  describe('When consult to haroldvz user', () => {
-    it('should retrieve haroldvz user data from API via GET', async(inject([ApiService], (api_ser: ApiService) => {
-
-      //spyOn(api_ser,'get').and.returnValue(Observable.of());
-      let s = new UsersService(api_ser);//also works with this
-      //spyOn(api_ser, 'get'); // 
-      user_service.getUser('haroldvz').subscribe((data) => {
-        console.log("Get user haroldvz")
-        console.log(data);
-        expect(data).toEqual(mock);//compare all json fields with all data fields
-      });
-
-      expect(spy.get).toBeDefined();
-      expect(spy.get).toHaveBeenCalledTimes(0);
-
-    })));
-  });
-});
-*/
 
 
 describe('UserService', () => {
@@ -116,7 +70,6 @@ describe('UserService', () => {
 
 
   });
-
 
   /*describe('#getUser',()=>{
 
@@ -139,8 +92,5 @@ describe('UserService', () => {
     });
 
   });
-
-
-
 
 })

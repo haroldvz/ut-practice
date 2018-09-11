@@ -10,7 +10,7 @@ describe('ApiService', () => {
     TestBed.configureTestingModule({
       providers: [ApiService],
       // can use HttpClientTestingModule
-      imports:[HttpClientModule,/*HttpClientTestingModule*/]//add this module to fix Error: StaticInjectorError(DynamicTestModule)[ApiService -> HttpClient]: StaticInjectorError(Platform: core)[ApiService -> HttpClient]: NullInjectorError: No provider for HttpClient!
+      imports:[HttpClientModule/*HttpClientTestingModule*/]//add this module to fix Error: StaticInjectorError(DynamicTestModule)[ApiService -> HttpClient]: StaticInjectorError(Platform: core)[ApiService -> HttpClient]: NullInjectorError: No provider for HttpClient!
     });
   });
 

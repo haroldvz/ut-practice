@@ -6,11 +6,12 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Routes, Router } from '@angular/router';
 import { DetailUserComponent } from '../detail-user/detail-user.component';
+import { By } from '@angular/platform-browser';
 
 
 const UserServiceMock = {
   getUsers: () => {
-    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' },{ login: 'daniel' }];
+    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }, { login: 'daniel' }];
     return of(todos);
   },
 };
@@ -28,11 +29,11 @@ describe('ListUsersComponent', () => {
   let httpmock: HttpTestingController;
   let component: ListUsersComponent;
   let fixture: ComponentFixture<ListUsersComponent>;
-  
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ListUsersComponent,DetailUserComponent],
-      imports:[RouterTestingModule,RouterTestingModule.withRoutes(testRoutes),],
+      declarations: [ListUsersComponent, DetailUserComponent],
+      imports: [RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),],
       providers: [
         { provide: UsersService, useValue: UserServiceMock }],
     }).compileComponents();;
@@ -65,28 +66,43 @@ describe('ListUsersComponent', () => {
 
 
   describe('#UI', () => {
+    
     describe('When some list user is clicked', () => {
+      let rou:Router;
       let compiled;
-      beforeEach(()=>{
+      beforeEach(() => {
+
+        rou = TestBed.get(Router);
         fixture = TestBed.createComponent(ListUsersComponent);
         component = fixture.componentInstance;
-        compiled = fixture.debugElement.nativeElement;    
+        compiled = fixture.debugElement.nativeElement;
         service = TestBed.get(UsersService);
+        
+     
       });
 
       it('should be able to navigate to user-detail: `/user:login` ',
-      fakeAsync(() => {
-      const injector = getTestBed();
-      const router = injector.get(Router);
-      fixture.detectChanges();
-      let username = compiled.querySelector('#id_haroldvz').textContent;
-      router.navigate(['/user/'+username])
-        .then(() => {
-          expect(router.url).toEqual('/user/haroldvz');
-        });
-    }));
+        fakeAsync(() => {
+          fixture.detectChanges();
+          const injector = getTestBed();
+          const router = injector.get(Router);
+          //let username = compiled.querySelector('#id_haroldvz');
+          let li = fixture.debugElement.query(By.css('#id_haroldvz'));
+          console.log(li);
+          /*fixture.detectChanges();
+          let username = compiled.querySelector('#id_haroldvz').textContent;
+          router.navigate(['/user/' + username])
+            .then(() => {
+              expect(router.url).toEqual('/user/haroldvz');
+            });*/
+            const spy = spyOn(rou,'navigate');
+            fixture.detectChanges();
+            li.triggerEventHandler('click',null);
+            console.log("navigateeeeeee")
+            console.log(spy.calls.first());
+        }));
 
-      
+
     });
   });
 
