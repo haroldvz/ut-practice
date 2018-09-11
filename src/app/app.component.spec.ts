@@ -7,6 +7,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ListUsersComponent } from './users/list-users/list-users.component';
 import { UsersService } from './shared/services/users.service';
 import { HttpClientModule } from '@angular/common/http';//	para corregirError: Uncaught (in promise): Error: StaticInjectorError(DynamicTestModule)[HttpClient]: 
+import { DetailUserComponent } from './users/detail-user/detail-user.component';
 
 
 const testRoutes: Routes = [
@@ -40,7 +41,7 @@ describe('AppComponent', () => {
       ],
       providers:[UsersService,],
       declarations: [
-        AppComponent, HomeComponent, ListUsersComponent
+        AppComponent, HomeComponent, ListUsersComponent,DetailUserComponent
       ],
     }).compileComponents();
   }));

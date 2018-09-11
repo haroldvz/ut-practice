@@ -1,12 +1,11 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { async, ComponentFixture, TestBed, fakeAsync, getTestBed } from '@angular/core/testing';
 import { ListUsersComponent } from './list-users.component';
 import { UsersService } from '../../shared/services/users.service';
 import { of } from 'rxjs';
 import { HttpTestingController } from '@angular/common/http/testing';
-
-
-
+import { RouterTestingModule } from '@angular/router/testing';
+import { Routes, Router } from '@angular/router';
+import { DetailUserComponent } from '../detail-user/detail-user.component';
 
 
 const UserServiceMock = {
@@ -14,11 +13,14 @@ const UserServiceMock = {
     const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' },{ login: 'daniel' }];
     return of(todos);
   },
-  getUser: () => {
-    const todo = { login: 'haroldvz' };
-    return of(todo);
-  }
 };
+
+const testRoutes: Routes = [
+  {
+    path: 'user/:login',
+    component: DetailUserComponent
+  },
+];
 
 
 describe('ListUsersComponent', () => {
@@ -26,25 +28,24 @@ describe('ListUsersComponent', () => {
   let httpmock: HttpTestingController;
   let component: ListUsersComponent;
   let fixture: ComponentFixture<ListUsersComponent>;
-
+  
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ListUsersComponent],
+      declarations: [ListUsersComponent,DetailUserComponent],
+      imports:[RouterTestingModule,RouterTestingModule.withRoutes(testRoutes),],
       providers: [
         { provide: UsersService, useValue: UserServiceMock }],
     }).compileComponents();;
   }));
-
   beforeEach(() => {
     fixture = TestBed.createComponent(ListUsersComponent);
     component = fixture.componentInstance;
+    //compiled = fixture.debugElement.nativeElement;    
     service = TestBed.get(UsersService);
   });
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
   it('should users variable be empty', () => {
     expect(component.users).toEqual([]);
   });
@@ -54,18 +55,40 @@ describe('ListUsersComponent', () => {
       it('should users be defined', () => {
         fixture.detectChanges();
         expect(component.users).toBeDefined();
-        expect(component.users.length).toBeGreaterThan(0);
       });
-      it('should users have to 1 or more elements', () => {
+      it('should users have to 3 elements', () => {
         fixture.detectChanges();
         expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
       });
-
     });
-
   });
 
 
+  describe('#UI', () => {
+    describe('When some list user is clicked', () => {
+      let compiled;
+      beforeEach(()=>{
+        fixture = TestBed.createComponent(ListUsersComponent);
+        component = fixture.componentInstance;
+        compiled = fixture.debugElement.nativeElement;    
+        service = TestBed.get(UsersService);
+      });
+
+      it('should be able to navigate to user-detail: `/user:login` ',
+      fakeAsync(() => {
+      const injector = getTestBed();
+      const router = injector.get(Router);
+      fixture.detectChanges();
+      let username = compiled.querySelector('#id_haroldvz').textContent;
+      router.navigate(['/user/'+username])
+        .then(() => {
+          expect(router.url).toEqual('/user/haroldvz');
+        });
+    }));
+
+      
+    });
+  });
 
 
 });
