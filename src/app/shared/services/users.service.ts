@@ -18,9 +18,9 @@ export class UsersService {
     getUser(user:string){
     return this._api_service.get(this.endpoint_url+'/',user).pipe(map(
       (data) => {
-        console.log(data);
-        //return usersDescriptor.import(data);
-        return data;
+        //console.log(data);
+        return usersDescriptor.import(data);
+        //return data;
       }
     ));
     }
@@ -29,7 +29,8 @@ export class UsersService {
     getUsers():Observable<any>{
       return this._api_service.get(this.endpoint_url).pipe(map(
         (data) => {
-          console.log(data);
+          //console.log("getUsers")
+          //console.log(data);
           //return usersDescriptor.import(data);
           return data;
         }

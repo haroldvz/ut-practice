@@ -23,18 +23,8 @@ export class ApiService {
    */
   get(endpoint_url: string = '', args: string = '') {
     let url = (this.api_url+endpoint_url+args);
-    console.log(url);
+    //console.log(url);
     return this._http.get(url);
-  }
-
-  getUser(user:string){
-    return this.get('users/',user).pipe(map(
-      (data) => {
-        console.log(data);
-        //return usersDescriptor.import(data);
-        return data;
-      }
-    ));
   }
 
 }

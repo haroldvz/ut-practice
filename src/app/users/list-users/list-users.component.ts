@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../shared/services/users.service';
+import { usersDescriptor } from '../../shared/types/user.type';
 
 @Component({
   selector: 'app-list-users',
@@ -8,18 +9,22 @@ import { UsersService } from '../../shared/services/users.service';
 })
 export class ListUsersComponent implements OnInit {
 
+  users:usersDescriptor[] = [];
+
   constructor(private _user_service:UsersService) { }
 
   sum(a: number, b: number): number {
     return a + b;
   }
 
-  users;
+  
 
   ngOnInit() {
     this._user_service.getUsers().subscribe((data)=>{
-      console.log(data);
-      this.users = data;
+      console.log(this.users);
+      data.forEach(element => {
+          this.users.push(usersDescriptor.import(element));
+      });
     })
   }
 

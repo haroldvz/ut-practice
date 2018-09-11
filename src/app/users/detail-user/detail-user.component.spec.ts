@@ -4,6 +4,19 @@ import { DetailUserComponent } from './detail-user.component';
 import { UsersService } from '../../shared/services/users.service';
 import { ApiService } from '../../shared/services/api.service';
 import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
+
+const UserServiceMock = {
+  getUsers: () => {
+    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }];
+    return of(todos);
+  },
+  getUser: () => {
+    const todo = { login: 'haroldvz' };
+    return of(todo);
+  }
+};
+
 /*
 describe('DetailUserComponent', () => {
   let component: DetailUserComponent;

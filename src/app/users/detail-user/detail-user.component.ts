@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from '../../shared/services/users.service';
+import { usersDescriptor } from '../../shared/types/user.type';
 
 @Component({
   selector: 'app-detail-user',
@@ -10,6 +11,7 @@ import { UsersService } from '../../shared/services/users.service';
 export class DetailUserComponent implements OnInit {
 
   routerSubscribe;
+  user:usersDescriptor;
 
   constructor(private route: ActivatedRoute,private _user_service:UsersService) { }
 
@@ -18,7 +20,9 @@ export class DetailUserComponent implements OnInit {
       let username: string = params['username'];
 
       this._user_service.getUser(username).subscribe((data)=>{
-        console.log(data);
+        this.user = data;
+        console.log("user");
+        console.log(this.user);
       })
 
     });

@@ -5,13 +5,17 @@ import { UsersService } from '../../shared/services/users.service';
 import { of } from 'rxjs';
 import { HttpTestingController } from '@angular/common/http/testing';
 
+
+
+
+
 const UserServiceMock = {
   getUsers: () => {
-    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }];
+    const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' },{ login: 'daniel' }];
     return of(todos);
   },
   getUser: () => {
-    const todo = [{ login: 'haroldvz' }];
+    const todo = { login: 'haroldvz' };
     return of(todo);
   }
 };
@@ -41,15 +45,24 @@ describe('ListUsersComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should users variable be undefined', () => {
-    expect(component.users).toBeUndefined();
+  it('should users variable be empty', () => {
+    expect(component.users).toEqual([]);
   });
 
   describe('#ngOninit', () => {
-    it('should users be defined', () => {
-      fixture.detectChanges();
-      expect(component.users).toBeDefined();
+    describe('When ngOninit is call', () => {
+      it('should users be defined', () => {
+        fixture.detectChanges();
+        expect(component.users).toBeDefined();
+        expect(component.users.length).toBeGreaterThan(0);
+      });
+      it('should users have to 1 or more elements', () => {
+        fixture.detectChanges();
+        expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
+      });
+
     });
+
   });
 
 
