@@ -63,34 +63,26 @@ describe('UserService', () => {
       imports: [HttpClientTestingModule],
       providers: [{ provide: UsersService, useValue: UserServiceMock }]
     });
-
     injector = getTestBed();
     service = injector.get(UsersService);
     httpmock = injector.get(HttpTestingController);
-
-
   });
 
   /*describe('#getUser',()=>{
-
     it('should return an Observable',()=>{
       service.getUser('haroldvz').subscribe((data)=>{
         console.log(data);
         expect(data).toEqual(mock);
       });
     });
-
   });*/
 
   describe('#getUsers', () => {
-
     it('should return an Observable with the users data', () => {
       service.getUsers().subscribe((data) => {
-        console.log(UserServiceMock.getUsers());
         expect(data).toEqual([{ login: 'haroldvz' }, { login: 'dev4ndy' }]);
       });
     });
-
   });
 
 })

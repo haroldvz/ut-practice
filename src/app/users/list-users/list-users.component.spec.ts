@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, getTestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, getTestBed,tick } from '@angular/core/testing';
 import { ListUsersComponent } from './list-users.component';
 import { UsersService } from '../../shared/services/users.service';
 import { of } from 'rxjs';
@@ -7,6 +7,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Routes, Router } from '@angular/router';
 import { DetailUserComponent } from '../detail-user/detail-user.component';
 import { By } from '@angular/platform-browser';
+import { CommonModule, Location } from '@angular/common';
+import { DebugElement } from '@angular/core';
+
 
 
 const UserServiceMock = {
@@ -29,82 +32,48 @@ describe('ListUsersComponent', () => {
   let httpmock: HttpTestingController;
   let component: ListUsersComponent;
   let fixture: ComponentFixture<ListUsersComponent>;
+  let location:Location;
+  let router:Router;
+  let debugElement: DebugElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ListUsersComponent, DetailUserComponent],
-      imports: [RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),],
+      declarations: [ListUsersComponent,DetailUserComponent],
+      imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes)],
       providers: [
         { provide: UsersService, useValue: UserServiceMock }],
     }).compileComponents();;
   }));
   beforeEach(() => {
+    router = TestBed.get(Router);
+    location = TestBed.get(Location);
     fixture = TestBed.createComponent(ListUsersComponent);
+    debugElement = fixture.debugElement;
     component = fixture.componentInstance;
     //compiled = fixture.debugElement.nativeElement;    
     service = TestBed.get(UsersService);
+    
   });
   it('should create', () => {
     expect(component).toBeTruthy();
   });
   it('should users variable be empty', () => {
+
     expect(component.users).toEqual([]);
   });
 
-  describe('#ngOninit', () => {
-    describe('When ngOninit is call', () => {
-      it('should users be defined', () => {
-        fixture.detectChanges();
-        expect(component.users).toBeDefined();
-      });
-      it('should users have to 3 elements', () => {
-        fixture.detectChanges();
-        expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
-      });
-    });
-  });
+  it('test demands redirection', fakeAsync(() => {
+    fixture.detectChanges();
+    //we trigger a click on our link
+    debugElement
+        .query(By.css('#id_haroldvz'))
+        .nativeElement.click();
 
+    //We wait for all pending promises to be resolved.
+    tick();
 
-  describe('#UI', () => {
+    expect(location.path()).toBe('/user/haroldvz');
     
-    describe('When some list user is clicked', () => {
-      let rou:Router;
-      let compiled;
-      beforeEach(() => {
-
-        rou = TestBed.get(Router);
-        fixture = TestBed.createComponent(ListUsersComponent);
-        component = fixture.componentInstance;
-        compiled = fixture.debugElement.nativeElement;
-        service = TestBed.get(UsersService);
-        
-     
-      });
-
-      it('should be able to navigate to user-detail: `/user:login` ',
-        fakeAsync(() => {
-          fixture.detectChanges();
-          const injector = getTestBed();
-          const router = injector.get(Router);
-          //let username = compiled.querySelector('#id_haroldvz');
-          let li = fixture.debugElement.query(By.css('#id_haroldvz'));
-          console.log(li);
-          /*fixture.detectChanges();
-          let username = compiled.querySelector('#id_haroldvz').textContent;
-          router.navigate(['/user/' + username])
-            .then(() => {
-              expect(router.url).toEqual('/user/haroldvz');
-            });*/
-            const spy = spyOn(rou,'navigate');
-            fixture.detectChanges();
-            li.triggerEventHandler('click',null);
-            console.log("navigateeeeeee")
-            console.log(spy.calls.first());
-        }));
-
-
-    });
-  });
-
+}));
 
 });
