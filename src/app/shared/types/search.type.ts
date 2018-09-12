@@ -4,7 +4,7 @@ export class searchDescriptor{
 
     public total_count: number;
     public incomplete_results: boolean;
-    public items: usersDescriptor[];
+    public items: usersDescriptor[] = [];
 
     /**
      *

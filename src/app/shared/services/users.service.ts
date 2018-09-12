@@ -15,7 +15,7 @@ export class UsersService {
 
     }
 
-    getUser(user:string){
+    getUser(user:string):Observable<usersDescriptor>{
     return this._api_service.get(this.endpoint_url+'/',user).pipe(map(
       (data) => {
         return usersDescriptor.import(data);
@@ -23,7 +23,7 @@ export class UsersService {
     ));
     }
 
-
+    //should I foreach and import like userDescriptor data here? or in component?
     getUsers():Observable<any>{
       return this._api_service.get(this.endpoint_url).pipe(map(
         (data) => {

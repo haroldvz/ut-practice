@@ -49,6 +49,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatAutocompleteModule,
     MatBadgeModule,
     MatBottomSheetModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -118,6 +119,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    ReactiveFormsModule,
   ],
   declarations: []
 })
