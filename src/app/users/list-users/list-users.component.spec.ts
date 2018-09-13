@@ -71,18 +71,28 @@ describe('ListUsersComponent', () => {
     describe('When ngOninit is call', () => {
       it('should users be defined',() => {
         fixture.detectChanges();
-        spy = spyOn(component,'listUsers').and.returnValue(true);
-        console.log(spy);
+        spy = spyOn(component,'listUsers').and.callThrough();
+        component.listUsers();
         expect(component.users).toBeDefined();
         expect(spy).toHaveBeenCalled();
       });
       it('should users have to 3 elements', () => {
         fixture.detectChanges();
-        
-
         expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
-       
       });
+      it('should actual page equal to 1',async(()=>{//cause the subscribe, if I not use async the _actual page property will be undefined
+        
+        fixture.detectChanges();
+        component.searchValueChages.subscribe(()=>{
+          console.log(component._actual_page);
+          spy = spyOn(component,'searchUsers').and.callThrough();
+          component.searchUsers();
+          expect(component._actual_page).toEqual(1);
+          expect(spy).toHaveBeenCalled();
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+        
+      }));
     });
   });
 
