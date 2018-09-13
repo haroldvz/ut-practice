@@ -21,7 +21,7 @@ const UserServiceMock = {
     const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }, { login: 'daniel' }];
     return of(todos);
   },
-  
+
 
 
 };
@@ -33,7 +33,7 @@ const SearchServiceMock = {
     const all = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
     return of(all);
   }
-  
+
 }
 
 const testRoutes: Routes = [
@@ -62,7 +62,7 @@ describe('ListUsersComponent', () => {
       imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),
         ReactiveFormsModule, FormsModule, HttpClientModule],
       providers: [
-        { provide: UsersService, useValue: UserServiceMock },{provide:SearchService,useValue:SearchServiceMock}],
+        { provide: UsersService, useValue: UserServiceMock }, { provide: SearchService, useValue: SearchServiceMock }],
     }).compileComponents();;
   }));
   beforeEach(() => {
@@ -84,7 +84,7 @@ describe('ListUsersComponent', () => {
   describe('#ngOninit', () => {
     describe('When ngOninit is call', () => {
       it('should users be defined', () => {
-        
+
         spyOn(component, 'listUsers');
         fixture.detectChanges();
         //component.listUsers();
@@ -97,7 +97,7 @@ describe('ListUsersComponent', () => {
         expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
       });
       it('should actual page equal to 1', async(() => {//cause the subscribe, if I not use async the _actual page property will be undefined
-    
+
         spyOn(component, 'searchUsers');
         fixture.detectChanges();
         component.searchValueChages.subscribe(() => {
@@ -106,7 +106,7 @@ describe('ListUsersComponent', () => {
           expect(component.searchUsers).toHaveBeenCalledTimes(1);
 
         });
-      
+
       }));
     });
   });
@@ -128,30 +128,42 @@ describe('ListUsersComponent', () => {
   });
 
 
- describe('SearchUser', () => {
-   let search_serv:SearchService;
-   beforeEach(()=>{
-    search_serv = TestBed.get(SearchService);
+  describe('SearchUser', () => {
+    let search_serv: SearchService;
+    beforeEach(() => {
+      search_serv = TestBed.get(SearchService);
 
-    
-   });
+
+    });
     describe('When SearchUser is called', () => {
-      it('should fill the users array with the API data',async(()=>{
-        spyOn(search_serv,'searchSomething').and.callThrough();
+      it('should fill the users array with the API data', async(() => {
+        spyOn(search_serv, 'searchSomething').and.callThrough();
+        //spyOn(component.searchValueChages,'subscribe').and.callThrough();
         fixture.detectChanges();
         component.searchCtrl.setValue('harold');//test the if when searchCtrl exits
         console.log(component.searchCtrl.value);
         component.searchUsers();
         let page = undefined;
-        component.searchValueChages.subscribe(()=>{
+        //page = component._actual_page;
+        //console.log(page);
+        component.searchValueChages.subscribe(() => {
           page = component._actual_page;
-          console.log(component.users);
+          console.log(page);
+          //console.log(component.users);
+          console.log(page);
+          let params = new HttpParams().set('q', 'harold').set('page', String(1));
+
+          expect(search_serv.searchSomething).toHaveBeenCalled();
+          expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
+          expect(search_serv.searchSomething).toHaveBeenCalledTimes(2);
         });
-        let params = new HttpParams().set('q', component.searchCtrl.value).set('page', String(page));
-        
-        expect(search_serv.searchSomething).toHaveBeenCalled();
-        expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
-        expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
+
+
+
+
+
+
+
 
       }));
 
