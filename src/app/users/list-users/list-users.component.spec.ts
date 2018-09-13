@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed, fakeAsync, getTestBed, tick, discardPeriodicTasks } from '@angular/core/testing';
 import { ListUsersComponent } from './list-users.component';
 import { UsersService } from '../../shared/services/users.service';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Routes, Router } from '@angular/router';
@@ -9,9 +9,11 @@ import { DetailUserComponent } from '../detail-user/detail-user.component';
 import { By } from '@angular/platform-browser';
 import { CommonModule, Location } from '@angular/common';
 import { DebugElement } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpParams } from '@angular/common/http';
+import { SearchService } from '../../shared/services/search.service';
+import { usersDescriptor } from '../../shared/types/user.type';
 
 
 const UserServiceMock = {
@@ -19,8 +21,20 @@ const UserServiceMock = {
     const todos = [{ login: 'haroldvz' }, { login: 'dev4ndy' }, { login: 'daniel' }];
     return of(todos);
   },
- 
+  
+
+
 };
+
+
+const SearchServiceMock = {
+
+  searchSomething: () => {
+    const all = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
+    return of(all);
+  }
+  
+}
 
 const testRoutes: Routes = [
   {
@@ -48,7 +62,7 @@ describe('ListUsersComponent', () => {
       imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),
         ReactiveFormsModule, FormsModule, HttpClientModule],
       providers: [
-        { provide: UsersService, useValue: UserServiceMock }],
+        { provide: UsersService, useValue: UserServiceMock },{provide:SearchService,useValue:SearchServiceMock}],
     }).compileComponents();;
   }));
   beforeEach(() => {
@@ -66,32 +80,33 @@ describe('ListUsersComponent', () => {
   it('should users variable be empty', () => {
     expect(component.users).toEqual([]);
   });
-  
+
   describe('#ngOninit', () => {
     describe('When ngOninit is call', () => {
-      it('should users be defined',() => {
+      it('should users be defined', () => {
+        
+        spyOn(component, 'listUsers');
         fixture.detectChanges();
-        spy = spyOn(component,'listUsers').and.callThrough();
-        component.listUsers();
+        //component.listUsers();
+        console.log(component.users);
         expect(component.users).toBeDefined();
-        expect(spy).toHaveBeenCalled();
+        expect(component.listUsers).toHaveBeenCalled();
       });
       it('should users have to 3 elements', () => {
         fixture.detectChanges();
         expect(component.users.length).toEqual(3);//becuse in the mock class are 3 users in getUsers()
       });
-      it('should actual page equal to 1',async(()=>{//cause the subscribe, if I not use async the _actual page property will be undefined
-        
+      it('should actual page equal to 1', async(() => {//cause the subscribe, if I not use async the _actual page property will be undefined
+    
+        spyOn(component, 'searchUsers');
         fixture.detectChanges();
-        component.searchValueChages.subscribe(()=>{
-          console.log(component._actual_page);
-          spy = spyOn(component,'searchUsers').and.callThrough();
-          component.searchUsers();
+        component.searchValueChages.subscribe(() => {
           expect(component._actual_page).toEqual(1);
-          expect(spy).toHaveBeenCalled();
-          expect(spy).toHaveBeenCalledTimes(1);
+          expect(component.searchUsers).toHaveBeenCalled();
+          expect(component.searchUsers).toHaveBeenCalledTimes(1);
+
         });
-        
+      
       }));
     });
   });
@@ -110,6 +125,37 @@ describe('ListUsersComponent', () => {
       expect(location.path()).toBe('/user/haroldvz');
       discardPeriodicTasks();
     }));
+  });
+
+
+ describe('SearchUser', () => {
+   let search_serv:SearchService;
+   beforeEach(()=>{
+    search_serv = TestBed.get(SearchService);
+
+    
+   });
+    describe('When SearchUser is called', () => {
+      it('should fill the users array with the API data',async(()=>{
+        spyOn(search_serv,'searchSomething').and.callThrough();
+        fixture.detectChanges();
+        component.searchCtrl.setValue('harold');//test the if when searchCtrl exits
+        console.log(component.searchCtrl.value);
+        component.searchUsers();
+        let page = undefined;
+        component.searchValueChages.subscribe(()=>{
+          page = component._actual_page;
+          console.log(component.users);
+        });
+        let params = new HttpParams().set('q', component.searchCtrl.value).set('page', String(page));
+        
+        expect(search_serv.searchSomething).toHaveBeenCalled();
+        expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
+        expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
+
+      }));
+
+    });
   });
 
 });
