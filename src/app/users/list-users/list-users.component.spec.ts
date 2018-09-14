@@ -27,9 +27,8 @@ const UserServiceMock = {
 };
 
 
-class SearchServiceMock extends SearchService{
-
-  searchSomething(what:string,params:HttpParams):Observable<searchDescriptor>{
+class SearchServiceMock2 extends SearchService {
+  searchSomething(what: string, params: HttpParams): Observable<searchDescriptor> {
     let sd = searchDescriptor.import({
       'total_count': 4,
       'incomplete_results': false,
@@ -38,20 +37,17 @@ class SearchServiceMock extends SearchService{
     //const all = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
     return of(sd);
   }
-
 }
 
-const SearchServiceMock2 = {
-
+const SearchServiceMock = {
   searchSomething: () => {
     const todos = searchDescriptor.import({
       'total_count': 4,
       'incomplete_results': false,
-      'items': [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })]
+      'items': [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldo' }), usersDescriptor.import({ login: 'harolllld' })]
     });
     return of(todos);
   },
-
 }
 
 const testRoutes: Routes = [
@@ -80,7 +76,7 @@ describe('ListUsersComponent', () => {
       imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),
         ReactiveFormsModule, FormsModule, HttpClientModule],
       providers: [
-        { provide: UsersService, useValue: UserServiceMock }, { provide: SearchService, useValue: SearchServiceMock2 }],
+        { provide: UsersService, useValue: UserServiceMock }, { provide: SearchService, useValue: SearchServiceMock }],
     }).compileComponents();;
   }));
   beforeEach(() => {
@@ -155,32 +151,52 @@ describe('ListUsersComponent', () => {
     });
     describe('When SearchUser is called', () => {
       it('should fill the users array with the API data', async(() => {
-        
         spyOn(search_serv, 'searchSomething').and.callThrough();
-        component.searchCtrl.setValue('harold');//test the if when searchCtrl exits
-        fixture.detectChanges();
-        component.searchUsers();
+        component.searchCtrl.setValue('harold');//test the if when searchCtrl exits and constains something
+        fixture.detectChanges();//detect this changes
+        component.searchUsers();//call the function to evaluate
+        let expect_response =
+          [
+            usersDescriptor.import({ login: 'haroldvz' }),
+            usersDescriptor.import({ login: 'haroldo' }),
+            usersDescriptor.import({ login: 'harolllld' })
+          ];
+        expect(component.users).toEqual(expect_response);
+        expect(search_serv.searchSomething).toHaveBeenCalled();//validate the searchsomethinf function (have been called)
+        let params = new HttpParams().set('q', 'harold').set('page', String(1));//pass initial params page 1 and value equal to searchCtrl input value
+        expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
+        expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);//this function only is call 1 time
+        console.log(component.users);
+      }));
+    });
+  });
+
+  describe('When input data changes', () => {
+    let search_serv: SearchService;
+    beforeEach(() => {
+      search_serv = TestBed.get(SearchService);
+    });
+    it('should refresh users array', async(() => {
+      spyOn(search_serv, 'searchSomething').and.callThrough();
+      spyOn(component, 'searchUsers').and.callThrough();
+      component.searchCtrl.setValue('harold');
+      fixture.detectChanges();//detect this changes
+      let params = new HttpParams().set('q', 'harold').set('page', String(1));
+      component.searchValueChages.subscribe(() => {
+        let expect_response =
+          [
+            usersDescriptor.import({ login: 'haroldvz' }),
+            usersDescriptor.import({ login: 'haroldo' }),
+            usersDescriptor.import({ login: 'harolllld' })
+          ];
+        expect(component.users).toEqual(expect_response);
         expect(search_serv.searchSomething).toHaveBeenCalled();
-        let params = new HttpParams().set('q', 'harold').set('page', String(1));
         expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
         expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
-        console.log(component.users);
 
-        //this part test when searchValueChages change
-        //component.users = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
-        /*component.searchValueChages.subscribe(() => {
-        
-          page = component._actual_page;
-          expect(search_serv.searchSomething).toHaveBeenCalled();
-          expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
-          expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
-          console.log(component.users)
+      });
 
-        });*/
-
-      }));
-
-    });
+    }));
   });
 
 });
