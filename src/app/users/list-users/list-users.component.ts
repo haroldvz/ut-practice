@@ -36,10 +36,11 @@ export class ListUsersComponent implements OnInit {
   }*/
 
   ngOnInit() {
+    this._actual_page = 1;
     this.listUsers();
     this.searchValueChages.subscribe(
       () => {
-        this._actual_page = 1;
+        
         this.searchUsers();
       }
     );

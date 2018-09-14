@@ -14,7 +14,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientModule, HttpParams } from '@angular/common/http';
 import { SearchService } from '../../shared/services/search.service';
 import { usersDescriptor } from '../../shared/types/user.type';
-
+import { searchDescriptor } from './../../shared/types/search.type';
 
 const UserServiceMock = {
   getUsers: () => {
@@ -27,12 +27,30 @@ const UserServiceMock = {
 };
 
 
-const SearchServiceMock = {
+class SearchServiceMock extends SearchService{
+
+  searchSomething(what:string,params:HttpParams):Observable<searchDescriptor>{
+    let sd = searchDescriptor.import({
+      'total_count': 4,
+      'incomplete_results': false,
+      'items': [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })]
+    })
+    //const all = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
+    return of(sd);
+  }
+
+}
+
+const SearchServiceMock2 = {
 
   searchSomething: () => {
-    const all = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
-    return of(all);
-  }
+    const todos = searchDescriptor.import({
+      'total_count': 4,
+      'incomplete_results': false,
+      'items': [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })]
+    });
+    return of(todos);
+  },
 
 }
 
@@ -62,7 +80,7 @@ describe('ListUsersComponent', () => {
       imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),
         ReactiveFormsModule, FormsModule, HttpClientModule],
       providers: [
-        { provide: UsersService, useValue: UserServiceMock }, { provide: SearchService, useValue: SearchServiceMock }],
+        { provide: UsersService, useValue: UserServiceMock }, { provide: SearchService, useValue: SearchServiceMock2 }],
     }).compileComponents();;
   }));
   beforeEach(() => {
@@ -137,33 +155,28 @@ describe('ListUsersComponent', () => {
     });
     describe('When SearchUser is called', () => {
       it('should fill the users array with the API data', async(() => {
+        
         spyOn(search_serv, 'searchSomething').and.callThrough();
-        //spyOn(component.searchValueChages,'subscribe').and.callThrough();
-        fixture.detectChanges();
         component.searchCtrl.setValue('harold');//test the if when searchCtrl exits
-        console.log(component.searchCtrl.value);
+        fixture.detectChanges();
         component.searchUsers();
-        let page = undefined;
-        //page = component._actual_page;
-        //console.log(page);
-        component.searchValueChages.subscribe(() => {
-          page = component._actual_page;
-          console.log(page);
-          //console.log(component.users);
-          console.log(page);
-          let params = new HttpParams().set('q', 'harold').set('page', String(1));
+        expect(search_serv.searchSomething).toHaveBeenCalled();
+        let params = new HttpParams().set('q', 'harold').set('page', String(1));
+        expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
+        expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
+        console.log(component.users);
 
+        //this part test when searchValueChages change
+        //component.users = [usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' }), usersDescriptor.import({ login: 'haroldvz' })];
+        /*component.searchValueChages.subscribe(() => {
+        
+          page = component._actual_page;
           expect(search_serv.searchSomething).toHaveBeenCalled();
           expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
-          expect(search_serv.searchSomething).toHaveBeenCalledTimes(2);
-        });
+          expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
+          console.log(component.users)
 
-
-
-
-
-
-
+        });*/
 
       }));
 
