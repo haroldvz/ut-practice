@@ -62,6 +62,7 @@ export class ListUsersComponent implements OnInit {
     if (this.searchCtrl.value != "" && this.searchCtrl.value != null) {
       let params = new HttpParams().set('q', this.searchCtrl.value).set('page', String(this._actual_page));
       this._search_service.searchSomething('users', params).subscribe((data) => {
+       
         this.users = [];
         //console.log(data.items);
         this.users = data.items;
