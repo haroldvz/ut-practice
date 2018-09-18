@@ -1,5 +1,4 @@
 import { TestBed, inject, async } from '@angular/core/testing';
-
 import { SearchService } from './search.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
@@ -33,6 +32,11 @@ describe('SearchService', () => {
 
 
   describe('When searchSomething() method is call', () => {
+
+    const emptyParams = new HttpParams().set('q', '');
+    const dummyParams = new HttpParams().set('q', 'cironunes');
+
+
     it('should call the API via GET', async(() => {
       spyOn(api_service, 'get').and.callThrough();
       const params = new HttpParams().set('q', 'harold');
@@ -75,15 +79,31 @@ describe('SearchService', () => {
      });
      expect(api_service.get).toHaveBeenCalledTimes(1);
    }));
+
+   it('should throw an error if trying to search for not supported `what`', async(() => {
+    spyOn(api_service, 'get').and.callThrough();
+    search_service.searchSomething('unknown',dummyParams)
+      .subscribe(() => {}, err => {
+        console.log(err);
+        expect(err).toBe(`Searching for unknown is not supported. The available types are: ${search_service.WHAT.join(', ')}.`);
+      });
+      //me aseguro que esto NO se haya llamado
+      expect(api_service.get).toHaveBeenCalledTimes(0);//cause the param what is unknown (the api get method dosent call)
+
+    const req = httpTestingController.expectNone(`${environment.api_url}search/users?q=cironunes`);
+  }));
+
+
+  it('should throw an error if trying to search ', async(() => {
+    spyOn(api_service, 'get').and.callThrough();
+    search_service.searchSomething('users', emptyParams)
+      .subscribe(() => {}, err => {
+        console.log('ERRRRRRRRRRRRR',err);
+        expect(err).toBe(`Searching for users is not supported. The available types are: ${search_service.WHAT.join(', ')}.`);
+      });
+    expect(api_service.get).toHaveBeenCalledTimes(0);
+    const req = httpTestingController.expectNone(`${environment.api_url}search/users?q=cironunes`);
+  }));
   });
-
-
-
-
-
-
-
-
-
 
 });

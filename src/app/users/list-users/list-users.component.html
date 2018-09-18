@@ -1,3 +1,5 @@
+<div class="app-list-users">
+<div class="container">
 <h2>Users</h2>
 <h3>Looking for {{searchCtrl.valueChanges|async}}: </h3>
 <mat-form-field class="example-full-width">
@@ -7,3 +9,5 @@
 <ol>
   <li *ngFor="let user of users" class="list-users"><a id="id_{{user.login}}" [routerLink]="['/user', user.login]">{{user.login}}</a></li>
 </ol>
+</div>
+</div>
