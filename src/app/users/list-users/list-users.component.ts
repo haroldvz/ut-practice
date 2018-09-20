@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { UsersService } from '../../shared/services/users.service';
 import { usersDescriptor } from '../../shared/types/user.type';
 import { HttpParams } from '@angular/common/http';
@@ -7,6 +7,17 @@ import { Observable } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SearchService } from '../../shared/services/search.service';
+import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import { DataSource } from '@angular/cdk/table';
+
+export interface UserDataTable {
+  id: number;
+  login: string;
+  url: string;
+  type: string;
+  avatar_url: string;
+}
+
 
 @Component({
   selector: 'app-list-users',
@@ -21,9 +32,22 @@ export class ListUsersComponent implements OnInit {
   searchValueChages: Observable<string>;
   _actual_page: number;
 
-  @Input() query: string;
+
+  //-----Material table --------
+  displayedColumns: string[] = ['id', 'login', 'type', 'url'];
+  dataSource: MatTableDataSource<usersDescriptor>;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  //----------------------------
+
 
   constructor(private _user_service: UsersService, private _search_service: SearchService, private _router: Router) {
+    //-----Material table --------
+    //here cause have to be defined
+    this.dataSource = new MatTableDataSource(this.users);
+    //--------------------------
+    
     this.searchCtrl = new FormControl();
     this.searchValueChages = this.searchCtrl.valueChanges.pipe(
       startWith(''),
@@ -37,6 +61,10 @@ export class ListUsersComponent implements OnInit {
 
   ngOnInit() {
     this._actual_page = 1;
+    //-----Material table --------
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    //------------------
     this.listUsers();
     this.searchValueChages.subscribe(
       () => {
@@ -53,6 +81,10 @@ export class ListUsersComponent implements OnInit {
       data.forEach(element => {
         this.users.push(usersDescriptor.import(element));
       });
+      //-----Material table --------
+      this.dataSource = new MatTableDataSource(this.users);
+      //---------------------
+      console.log("data source",this.dataSource);
     });
   }
 
@@ -66,6 +98,10 @@ export class ListUsersComponent implements OnInit {
         this.users = [];
         //console.log(data.items);
         this.users = data.items;
+        //-----Material table --------
+        this.dataSource = new MatTableDataSource(this.users);
+        //---------------------------
+        console.log("data source",this.dataSource);
       });
       //console.log(this.searchCtrl.value);
     } else {
@@ -73,5 +109,15 @@ export class ListUsersComponent implements OnInit {
     }
     //const params = new HttpParams().set('q', users);
   }
+
+  //-----Material table --------
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  //--------------------------
 
 }

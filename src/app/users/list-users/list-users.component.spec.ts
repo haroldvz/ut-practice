@@ -15,6 +15,9 @@ import { HttpClientModule, HttpParams } from '@angular/common/http';
 import { SearchService } from '../../shared/services/search.service';
 import { usersDescriptor } from '../../shared/types/user.type';
 import { searchDescriptor } from './../../shared/types/search.type';
+import { GetAgePipe } from '../../shared/pipes/calculate-age.pipe';
+
+
 
 const UserServiceMock = {
   getUsers: () => {
@@ -67,12 +70,10 @@ describe('ListUsersComponent', () => {
   let router: Router;
   let debugElement: DebugElement;
 
-  let spy;
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [ListUsersComponent, DetailUserComponent],
+      declarations: [ListUsersComponent, DetailUserComponent,GetAgePipe],
       imports: [CommonModule, RouterTestingModule, RouterTestingModule.withRoutes(testRoutes),
         ReactiveFormsModule, FormsModule, HttpClientModule],
       providers: [
@@ -94,6 +95,14 @@ describe('ListUsersComponent', () => {
   it('should users variable be empty', () => {
     expect(component.users).toEqual([]);
   });
+
+  it(`should h3 tag display ''`, async(() => {
+
+    fixture.detectChanges();
+    const de = fixture.debugElement.query(By.css('h3'));
+    expect(de.nativeElement.textContent).toEqual('Looking for : ');
+
+  }));
 
   describe('#ngOninit', () => {
     describe('When ngOninit is call', () => {
@@ -179,10 +188,14 @@ describe('ListUsersComponent', () => {
     it('should refresh users array', async(() => {
       spyOn(search_serv, 'searchSomething').and.callThrough();
       spyOn(component, 'searchUsers').and.callThrough();
+
+      const inputDe = fixture.debugElement.query(By.css('input'));
+      const inputEl = inputDe.nativeElement;
+
       component.searchCtrl.setValue('harold');
       fixture.detectChanges();//detect this changes
       let params = new HttpParams().set('q', 'harold').set('page', String(1));
-      component.searchValueChages.subscribe(() => {
+      /*component.searchValueChages.subscribe(() => {
         let expect_response =
           [
             usersDescriptor.import({ login: 'haroldvz' }),
@@ -194,6 +207,40 @@ describe('ListUsersComponent', () => {
         expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
         expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
 
+      });*/
+
+      inputEl.dispatchEvent(new Event('input'));
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        let expect_response =
+          [
+            usersDescriptor.import({ login: 'haroldvz' }),
+            usersDescriptor.import({ login: 'haroldo' }),
+            usersDescriptor.import({ login: 'harolllld' })
+          ];
+        expect(component.users).toEqual(expect_response);
+        expect(search_serv.searchSomething).toHaveBeenCalled();
+        expect(search_serv.searchSomething).toHaveBeenCalledWith('users', params);
+        expect(search_serv.searchSomething).toHaveBeenCalledTimes(1);
+      });
+
+    }));
+
+    it('should change h3 tag', async(() => {
+      fixture.detectChanges();//detect this changes
+
+      const inputDe = fixture.debugElement.query(By.css('input'));
+      const inputEl = inputDe.nativeElement;
+
+      component.searchCtrl.setValue('harold');
+
+      fixture.detectChanges();//detect this changes
+
+      inputEl.dispatchEvent(new Event('input'));
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        const de = fixture.debugElement.query(By.css('h3'));
+        expect(de.nativeElement.textContent).toEqual('Looking for : harold');
       });
 
     }));
