@@ -12,7 +12,7 @@ export class SearchService {
 
   endpoint_url:string = 'search';
   readonly WHAT = ['repositories', 'commits', 'code', 'issues', 'users'];
-
+  
   constructor(private _api_service: ApiService) { }
 
   searchSomething(what: string, params: HttpParams):Observable<searchDescriptor>{

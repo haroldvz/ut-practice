@@ -128,8 +128,8 @@ import { CdkTreeModule } from '@angular/cdk/tree';
     RedblackDirective,
     HoverFocusDirective,
     CdkTreeModule,
-    GetAgePipe
+    
   ],
-  declarations: [RedblackDirective, HoverFocusDirective, GooglePlacesDirective, GetAgePipe]
+  declarations: [RedblackDirective, HoverFocusDirective, GooglePlacesDirective]
 })
 export class SharedModule { }

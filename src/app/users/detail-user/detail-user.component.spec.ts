@@ -6,7 +6,9 @@ import { of } from 'rxjs';
 import { usersDescriptor } from '../../shared/types/user.type';
 import { GetAgePipe } from '../../shared/pipes/calculate-age.pipe';
 import {CommonModule} from "@angular/common";
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+
+
 const UserServiceMock = {
   getUser: () => {
     const todo = { login: 'haroldvz' };
@@ -21,7 +23,7 @@ describe('DetailUserComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [ DetailUserComponent, GetAgePipe ],
+      declarations: [ GetAgePipe, DetailUserComponent ],
       providers: [
         { provide: UsersService, useValue: UserServiceMock }],
       imports:[RouterTestingModule,CommonModule]
