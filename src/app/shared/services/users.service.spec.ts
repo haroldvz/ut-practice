@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 import { of } from 'rxjs';
 import { usersDescriptor } from '../types/user.type';
+import { ApiService } from './api.service';
 
 //TEST HERE WITH HTTP?? OR MOCKS?
 
@@ -57,40 +58,38 @@ describe('UserService', () => {
   let injector;
   let service: UsersService;
   let httpmock: HttpTestingController;
+  let api_service:ApiService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [{ provide: UsersService, useValue: UserServiceMock }]
+      providers: [{ provide: UsersService, useValue: UserServiceMock },ApiService]
     });
-
     injector = getTestBed();
     service = injector.get(UsersService);
     httpmock = injector.get(HttpTestingController);
-
-
+    api_service = injector.get(ApiService);
   });
 
-  /*describe('#getUser',()=>{
-
+  describe('#getUser',()=>{
     it('should return an Observable',()=>{
+      //spyOn(api_service,'get');
       service.getUser('haroldvz').subscribe((data)=>{
         console.log(data);
-        expect(data).toEqual(mock);
+        expect(data).toEqual(usersDescriptor.import({ login: 'haroldvz' }));
       });
+      //expect(api_service.get).toHaveBeenCalled();
     });
-
-  });*/
+  });
 
   describe('#getUsers', () => {
-
     it('should return an Observable with the users data', () => {
       service.getUsers().subscribe((data) => {
-        console.log(UserServiceMock.getUsers());
+        console.log("test in users");
+        console.log(data);
         expect(data).toEqual([{ login: 'haroldvz' }, { login: 'dev4ndy' }]);
       });
     });
-
   });
 
 })

@@ -8,7 +8,7 @@ import { ListUsersComponent } from './users/list-users/list-users.component';
 import { UsersService } from './shared/services/users.service';
 import { HttpClientModule } from '@angular/common/http';//	para corregirError: Uncaught (in promise): Error: StaticInjectorError(DynamicTestModule)[HttpClient]: 
 import { DetailUserComponent } from './users/detail-user/detail-user.component';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const testRoutes: Routes = [
   {
@@ -37,7 +37,8 @@ describe('AppComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
         RouterTestingModule.withRoutes(testRoutes),
-        HttpClientModule
+        HttpClientModule,
+        FormsModule, ReactiveFormsModule//so, the formcontrol is in the list user component but i nedd this here also
       ],
       providers:[UsersService,],
       declarations: [
@@ -93,11 +94,6 @@ describe('AppComponent', () => {
           expect(router.url).toEqual('/users');
         });
     }));
-
-
-
-
-
 
   /*it(`should have as title 'practice-ut'`, async(() => {
     const fixture = TestBed.createComponent(AppComponent);

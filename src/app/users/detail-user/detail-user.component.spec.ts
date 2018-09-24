@@ -4,6 +4,10 @@ import { UsersService } from '../../shared/services/users.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { usersDescriptor } from '../../shared/types/user.type';
+import { GetAgePipe } from '../../shared/pipes/calculate-age.pipe';
+import {CommonModule} from "@angular/common";
+import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+
 
 const UserServiceMock = {
   getUser: () => {
@@ -18,10 +22,11 @@ describe('DetailUserComponent', () => {
   
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetailUserComponent ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [ GetAgePipe, DetailUserComponent ],
       providers: [
         { provide: UsersService, useValue: UserServiceMock }],
-      imports:[RouterTestingModule]
+      imports:[RouterTestingModule,CommonModule]
     })
     .compileComponents();
   }));

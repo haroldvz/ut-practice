@@ -1,2 +1,12 @@
+<div class="app-detail-user">
+<div class="container">
+<div *ngIf="user">
 <h2>{{user.login}}</h2>
+<p>This text is normal</p>
+<p appRedblack>This text is a custom directive one</p>
+<p appHoverFocus>This text is a custom directive one HoverFocus</p>
+<!--<p>{{'1994-10-19'|getAge}}</p>-->
 <img src="{{user.avatar_url}}" alt="image {{user.login}}" />
+</div>
+</div>
+</div>
